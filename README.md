@@ -2,6 +2,23 @@
 
 Algolab.com.tr API'sini kullanarak geliştirilmiş web tabanlı trading platformu.
 
+## Proje Yapısı ve Çalışma Mantığı
+
+Bu proje, Algolab API'sini kullanarak borsa işlemlerini web arayüzü üzerinden gerçekleştirmenizi sağlar. Temel bileşenleri:
+
+- **Flask Web Uygulaması (`app.py`)**: Kullanıcı arayüzü ve API endpoint'lerini sağlar
+- **Algolab API Entegrasyonu (`algolab_api.py`)**: Algolab.com.tr API'si ile iletişimi sağlar
+- **Tick to OHLCV Dönüştürücü (`tick_to_ohlcv_converter.py`)**: Gerçek zamanlı işlem verilerini OHLCV (Open-High-Low-Close-Volume) formatına dönüştürür
+- **WebSocket Bağlantısı (`ws.py`)**: Gerçek zamanlı veri akışı için WebSocket bağlantısını yönetir
+- **Oturum Yönetimi (`session_manager.py`)**: API oturumlarını otomatik olarak yeniler
+
+### Veri Akışı
+
+1. Kullanıcı web arayüzünden veya webhook aracılığıyla emir gönderir
+2. Uygulama, Algolab API'sine istek yapar
+3. API yanıtı işlenir ve kullanıcıya gösterilir
+4. WebSocket bağlantısı ile gerçek zamanlı veri akışı sağlanır
+
 ## Özellikler
 
 - Web arayüzü ile kolay kullanım
@@ -10,6 +27,8 @@ Algolab.com.tr API'sini kullanarak geliştirilmiş web tabanlı trading platform
 - Portföy takibi
 - Günlük işlem geçmişi
 - Webhook emir geçmişi
+- Gerçek zamanlı veri akışı
+- OHLCV veri dönüşümü
 
 ## Kurulum
 
@@ -17,8 +36,8 @@ Algolab.com.tr API'sini kullanarak geliştirilmiş web tabanlı trading platform
 
 1. Repo'yu klonlayın:
 ```bash
-git clone https://github.com/coinfxpro/AlgoLab_Web.git
-cd AlgoLab_Web
+git clone https://github.com/coinfxpro/algoweb.git
+cd algoweb
 ```
 
 2. Virtual environment oluşturun (opsiyonel ama önerilen):
@@ -34,32 +53,39 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
-4. SQLite veritabanını oluşturun:
-```bash
-python
->>> from app import app, db
->>> with app.app_context():
-...     db.create_all()
->>> exit()
+4. `config.py` dosyasını düzenleyin:
+```python
+# USER INFO
+MY_API_KEY='API-KEY' # API Key'inizi Buraya Giriniz
+MY_USERNAME = "TC veya Denizbank Kullanici Adi" # TC veya Denizbank Kullanıcı Adınızı Buraya Giriniz
+MY_PASSWORD = "Şifre" # Denizbank İnternet Bankacılığı Şifrenizi Buraya Giriniz
 ```
 
-### Sunucu Kurulumu (Render.com)
-
-1. Render.com'da yeni bir Web Service oluşturun
-2. GitHub reponuzu bağlayın
-3. Environment variables'ları ayarlayın:
-   - `SECRET_KEY`: Rastgele bir string
-   - Diğer gerekli environment variables'lar
-
-4. Build Command:
+5. Uygulamayı çalıştırın:
 ```bash
-pip install -r requirements.txt
+python app.py
 ```
 
-5. Start Command:
-```bash
-gunicorn app:app
-```
+### Render.com Üzerinde Kurulum
+
+1. GitHub hesabınızda bu repo'yu fork edin veya doğrudan Render.com'a bağlanın
+
+2. Render.com'da yeni bir Web Service oluşturun:
+   - **Name**: AlgoLab Web
+   - **Environment**: Python
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+
+3. Environment Variables ayarlayın:
+   - `WEBHOOK_SECRET`: Güvenli bir rastgele string (webhook güvenliği için)
+   - `PYTHON_VERSION`: 3.11.0
+
+4. Advanced Settings:
+   - Auto-Deploy: Yes (GitHub repo'nuz güncellendiğinde otomatik dağıtım için)
+   - Health Check Path: `/`
+   - Instance Type: Free (başlangıç için) veya Basic (üretim için)
+
+5. Create Web Service butonuna tıklayın ve dağıtımın tamamlanmasını bekleyin
 
 ## Kullanım
 
