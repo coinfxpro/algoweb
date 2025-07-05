@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h2 class="mb-4">Webhook Ayarları</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Webhook Ayarları</h5>
+            <i class="fas fa-cog text-primary"></i>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Secret Key</h5>
+                            <i class="fas fa-key text-warning"></i>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                Bu secret key, TradingView webhook'larını doğrulamak için kullanılır. 
+                                TradingView'da webhook mesajı gönderirken, bu secret key'i mesaj içinde 'secret' parametresi olarak göndermelisiniz.
+                            </p>
+                            
+                            <form method="POST">
+                                <div class="mb-3">
+                                    <label for="webhook_secret" class="form-label">Secret Key</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="webhook_secret" 
+                                               name="webhook_secret" 
+                                               value="{{ current_secret }}"
+                                               placeholder="Secret key girin veya mevcut olanı değiştirin"
+                                               required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Kaydet</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if current_secret %}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">TradingView Webhook Ayarları</h5>
+                            <i class="fas fa-code text-info"></i>
+                        </div>
+                        <div class="card-body">
+                            <p>TradingView'da webhook oluştururken aşağıdaki adımları izleyin:</p>
+                                <ol class="ps-3">
+                                    <li>TradingView'da strateji veya alarm ekranını açın ve <strong>"Webhook URL"</strong> kutusuna aşağıdaki URL'yi yapıştırın.</li>
+                                    <li><strong>"Message"</strong> alanına sağdaki formatta JSON verisini kopyalayın ve kendi sembol/fiyat/miktarınıza göre güncelleyin.</li>
+                                    <li><em>Side:</em> BUY (Al) veya SELL (Sat) değerini kullanın.</li>
+                                    <li><em>Type:</em> MARKET piyasa emri, LIMIT ise limit emridir. LIMIT seçtiyseniz <code>price</code> alanı zorunludur.</li>
+                                    <li><em>Quantity:</em> İşlem adedini ifade eder. Ondalıklı lot destekleniyorsa ondalık girilebilir.</li>
+                                </ol>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-link me-2 text-primary"></i>
+                                    <strong>Webhook URL:</strong>
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="{{ request.host_url }}webhook/tradingview" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText('{{ request.host_url }}webhook/tradingview')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-file-code me-2 text-success"></i>
+                                    <strong>İstek Formatı:</strong>
+                                </div>
+                                <ul class="list-unstyled ms-4">
+                                    <li><i class="fas fa-check text-success me-1"></i>HTTP Method: <code>POST</code></li>
+                                    <li><i class="fas fa-check text-success me-1"></i>Content-Type: <code>application/json</code></li>
+                                    <li><i class="fas fa-check text-success me-1"></i>Body alanında JSON mesajı (aşağıda örnek)</li>
+                                </ul>
+                            </div>
+                            
+                            <h6 class="mt-4"><i class="fas fa-code me-2"></i>Örnek Webhook Mesajı:</h6>
+                            <div class="code-block">
+                                <pre class="mb-0"><code>{
+    "secret": "{{ current_secret }}",  // Webhook secret key
+    "symbol": "ISCTR",
+    "side": "BUY",      // BUY veya SELL
+    "type": "LIMIT",    // LIMIT veya MARKET
+    "price": "14.00",   // Limit emirler için fiyat
+    "quantity": "1"     // İşlem miktarı
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

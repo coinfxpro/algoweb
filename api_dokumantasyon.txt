@@ -1,0 +1,570 @@
+{\rtf1\ansi\ansicpg1254\cocoartf2821
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue233;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c0\c0\c93333;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh15420\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Genel Bilgilendirme\
+Versiyon: 1.0.5\
+Api Yetkilendirilmesi\
+API anahtar\uc0\u305 n\u305 z\u305  Algolab \'fczerinden ba\u351 vuru yap\u305 p ald\u305 ktan sonra, Deniz Yat\u305 r\u305 m API ile bu d\'f6k\'fcmantasyonda yer alan y\'f6nlendirmelere g\'f6re uygulaman\u305 z\u305  geli\u351 tirebilirsiniz. Her kullan\u305 c\u305  i\'e7in bir adet API Anahtar\u305  olu\u351 turulmaktad\u305 r.\
+\
+Ba\uc0\u351 vurunun Onaylanmas\u305  \
+Ba\uc0\u351 vurunuzun onaylanabilmesi i\'e7in ba\u351 vuru yapt\u305 \u287 \u305 n\u305 z k\u305 sm\u305 n alt\u305 nda nas\u305 l tamamlayaca\u287 \u305 n\u305 z belirtilen Uygunluk ve Yerindelik testleri en az Y\'fcksek(4) olacak \u351 ekilde (Yerindelik testi sonunda yer alan Yat\u305 r\u305 m Dan\u305 \u351 manl\u305 \u287 \u305  \'c7er\'e7eve S\'f6zle\u351 mesi de onaylanmal\u305 ) tamamlanmal\u305  ve Algoritmik \u304 \u351 lem S\'f6zle\u351 mesi onaylanmal\u305 d\u305 r.\
+Canl\uc0\u305  Veri Tipleri \
+Anl\uc0\u305 k veri eri\u351 imi i\'e7in iki adet izin mevcuttur. Bu izinler \u351 u \u351 ekilde a\'e7\u305 klanmaktad\u305 r:\
+\
+Canl\uc0\u305  Veri S\'f6zle\u351 mesi: Soketten gelen verilerin anl\u305 k olarak gelmesi i\'e7in gerekli olan s\'f6zle\u351 medir. E\u287 er canl\u305  veri yetkiniz bulunmuyorsa 15 dakika gecikmeli olarak belirli aral\u305 klarla gelmektedir.\
+\
+Derinlik Veri S\'f6zle\uc0\u351 mesi: Soketten gelen derinlik verilerine eri\u351 im sa\u287 layan s\'f6zle\u351 medir. On kademe al\u305 m sat\u305 m derinli\u287 i sa\u287 lanmaktad\u305 r.\
+\
+API\'92 yi kullan\uc0\u305 rken l\'fctfen a\u351 a\u287 \u305 daki bilgileri unutmay\u305 n:\
+\
+APIKEY: Rastgele bir algoritma taraf\uc0\u305 ndan olu\u351 turulan API i\u351 lemlerinin kimli\u287 idir.\
+\
+Internet Bankac\uc0\u305 l\u305 \u287 \u305  Kullan\u305 c\u305  Ad\u305 /TCK Numaras\u305 : \u304 nternet bankac\u305 l\u305 \u287 \u305 na giri\u351  yaparken sizin olu\u351 turdu\u287 unuz kullan\u305 c\u305  ad\u305  veya internet bankac\u305 l\u305 \u287 \u305 na giri\u351  yaparken kulland\u305 \u287 \u305 n\u305 z TCK numaran\u305 z.\
+\
+Internet Bankac\uc0\u305 l\u305 \u287 \u305  \u350 ifreniz: Sizin olu\u351 turmu\u351  oldu\u287 unuz internet bankac\u305 l\u305 \u287 \u305  \u351 ifreniz.\
+\
+Sms Do\uc0\u287 rulama Kodu: Sistemde kay\u305 tl\u305  telefon numaran\u305 za gelen rastgele olu\u351 turulmu\u351  \u351 ifredir.\
+\
+Etkile\uc0\u351 im Talebi\
+Bu b\'f6l\'fcm temel olarak eri\uc0\u351 ime odaklanmaktad\u305 r:\
+\
+Rest-API istekleri i\'e7in a\uc0\u351 a\u287 \u305 daki url ile eri\u351 im sa\u287 lanmaktad\u305 r.\
+   {\field{\*\fldinst{HYPERLINK "https://www.algolab.com.tr/api"}}{\fldrslt \cf3 \ul \ulc3 \strokec3 https://www.algolab.com.tr/api}}\
+Soket ba\uc0\u287 lant\u305 s\u305  i\'e7in a\u351 a\u287 \u305 daki url ile eri\u351 im sa\u287 lanmaktad\u305 r.\
+   wss://www.algolab.com.tr/api/ws\
+API Do\uc0\u287 rulamas\u305 \
+Bir istek ba\uc0\u351 latmak i\'e7in a\u351 a\u287 \u305 daki bilgiler gerekmektedir;\
+APIKEY: API Anahtar\uc0\u305 d\u305 r.\
+Authorization: Kullan\uc0\u305 c\u305  giri\u351 i yap\u305 ld\u305 ktan sonraki isteklerde kullan\u305 lmaktad\u305 r.\
+Checker: Her iste\uc0\u287 e \'f6zel imzad\u305 r. Her iste\u287 e g\'f6re yeniden olu\u351 turulur. APIKEY + RequestPath + QueryString veya Body(GET/POST Methoduna g\'f6re de\u287 i\u351 iklik g\'f6stermektedir.)\
+RequestPath: API yolu.\
+QueryString: \uc0\u304 stek URL\'92 indeki sorgu dizesi (?\'92den sonraki istek parametresi soru i\u351 areti ile birlikte)\
+Body: \uc0\u304 stek g\'f6vdesine kar\u351 \u305 l\u305 k gelen dize. Body genellikle POST iste\u287 inde olur.\
+ \
+Kullan\uc0\u305 c\u305  Giri\u351 i: SMS Alma\
+Internet Bankac\uc0\u305 l\u305 \u287 \u305  bilgileri ile giri\u351  yapman\u305 z\u305  sa\u287 lar. \u304 stek sonunda sistemde kay\u305 tl\u305  telefon numaran\u305 za SMS do\u287 rulama kodu gelir. Gelen SMS\'92 teki kod ile bir sonraki i\u351 lem ger\'e7ekle\u351 tirilecektir.\
+\
+Http \uc0\u304 ste\u287 i\
+\
+POST /api/LoginUser\
+Http Headers Content-Type: application/json\
+APIKEY: Ba\uc0\u351 vuru Sonucu Al\u305 nan APIKEY\
+\uc0\u304 stek Parametresi\
+\
+A\uc0\u351 a\u287 \u305 daki parametreleri AES Algoritmas\u305 n\u305  kullanarak APIKEY i\'e7erisindeki \'93-\'94 \'91den sonraki string de\u287 er ile \u351 ifrelemeniz gerekmektedir.\
+\
+\'d6rne\uc0\u287 in:\
+\
+APIKEY: APIKEY-04YW0b9Cb8S0MrgBw/Y4iPYi2hjIidW7qj4hrhBhwZg=\
+\
+Yukar\uc0\u305 daki APIKEY\'92 e g\'f6re AES Algoritmas\u305 nda kullan\u305 lacak key a\u351 a\u287 \u305 daki \u351 ekildedir.\
+\
+aes.Key: 04YW0b9Cb8S0MrgBw/Y4iPYi2hjIidW7qj4hrhBhwZg=\
+\
+ \
+\
+\uc0\u304 stek Parametreleri\
+\
+Parametre Ad\uc0\u305 	Parametre Tipi	A\'e7\u305 klama\
+Username	String	Kullan\uc0\u305 c\u305  Ad\u305 / TCK Numaras\u305 \
+Password	String	\uc0\u304 nternet Bankac\u305 l\u305 \u287 \u305  \u350 ifresi\
+ \
+\
+\'d6rnek Request Body\
+\
+\{\
+   "Username": "YTZ1RF2Q04T/nZThi0JzUA==",\
+   "Password": "9LHZEiA2AhKsAtM4yOOrEw=="\
+\}\
+\
+ \
+\
+Sonu\'e7 Parametreleri\
+\
+Parametre Ad\uc0\u305 	Parametre Tipi	A\'e7\u305 klama\
+token	String	SMS i\'e7in gerekli token\
+ \
+\
+ \'d6rnek Response\
+\
+\{\
+   "success": true,\
+   "message": "",\
+   "content": \{\
+      "token": "Ys/WhU/D37vO71VIBumDRhZLmkcMlzyb3TKJVWxLlpb/4BByYLNfQ07dEe66P3Ab"\
+   \}\
+\}\
+\
+\
+\'d6rnek python kodu:\
+import requests, hashlib, json, inspect, time, base64\
+from Crypto.Cipher import AES\
+from Crypto.Util.Padding import pad\
+\
+# Kullan\uc0\u305 c\u305  Bilgileri\
+apikey= "" # API Key'inizi Buraya Giriniz\
+username = "" # TC veya Denizbank Kullan\uc0\u305 c\u305  Ad\u305 n\u305 z\u305  Buraya Giriniz\
+password = "" # Denizbank \uc0\u304 nternet Bankac\u305 l\u305 \u287 \u305  \u350 ifrenizi Buraya Giriniz\
+\
+\
+# \uc0\u304 stek g\'f6nderilecek host bilgileri\
+hostname = "www.algolab.com.tr" # \uc0\u304 stek at\u305 lacak web sitesi\
+api_hostname = f"https://\{hostname\}" # HTTPS eklentisi\
+api_url = api_hostname + "/api" # API iste\uc0\u287 inin at\u305 d\u305 \u287 \u305  k\u305 s\u305 m\
+\
+class API():\
+    def __init__(self, api_key, username, password):\
+        """\
+        api_key: API-KEY\
+        username: TC Kimlik No\
+        password: Hesap \uc0\u350 ifreniz\
+        token: Giri\uc0\u351  yapt\u305 ktan sonra al\u305 nan token\
+        hash: Giri\uc0\u351  yapt\u305 ktan sonra al\u305 nan hash\
+        """\
+        try:\
+            self.api_code = api_key.split("-")[1]\
+        except Exception:\
+            self.api_code = api_key\
+        self.api_key = "API-" + self.api_code\
+        self.username = username\
+        self.password = password\
+        self.api_hostname = api_hostname\
+        self.api_url = api_url\
+        self.headers = \{"APIKEY": self.api_key\}\
+        self.last_request = 0.0\
+        self.LOCK = False\
+\
+    def LoginUser(self):\
+        try:\
+            f = inspect.stack()[0][3]\
+            u = self.encrypt(self.username)\
+            p = self.encrypt(self.password)\
+            payload = \{"username": u, "password": p\}\
+            endpoint = "/api/LoginUser"\
+            resp = self.post(endpoint=endpoint, payload=payload, login=True)\
+            return resp.json()\
+        except Exception as e:\
+            print(f"\{f\}() fonsiyonunda hata olu\uc0\u351 tu: \{e\}")\
+        \
+    def post(self, endpoint, payload, login=False):\
+        url = self.api_url\
+        if not login:\
+            checker = self.make_checker(endpoint, payload)\
+            headers = \{"APIKEY": self.api_key,\
+                       "Checker": checker,\
+                       "Authorization": self.hash\
+                       \}\
+        else:\
+            headers = \{"APIKEY": self.api_key\}\
+        return self._request("POST", url, endpoint, payload=payload, headers=headers)\
+            \
+    def encrypt(self, text): \
+        iv = b'\\0' * 16\
+        key = base64.b64decode(self.api_code.encode('utf-8'))\
+        cipher = AES.new(key, AES.MODE_CBC, iv)\
+        bytes = text.encode()\
+        padded_bytes = pad(bytes, 16)\
+        r = cipher.encrypt(padded_bytes)\
+        return base64.b64encode(r).decode("utf-8")\
+\
+    def make_checker(self, endpoint, payload):\
+        body = json.dumps(payload).replace(' ', '') if len(payload) > 0 else ""\
+        data = self.api_key + self.api_hostname + endpoint + body\
+        return hashlib.sha256(data.encode('utf-8')).hexdigest()\
+\
+    def _request(self, method, url, endpoint, payload, headers):\
+        while self.LOCK:\
+            time.sleep(0.1)\
+        self.LOCK = True\
+        try:\
+            response = ""\
+            if method == "POST":\
+                t = time.time()\
+                diff = t - self.last_request\
+                wait_for = self.last_request > 0.0 and diff < 5.0 # son i\uc0\u351 lemden ge\'e7en s\'fcre 5 saniyeden k\'fc\'e7\'fckse bekle\
+                if wait_for:\
+                    time.sleep(5 - diff + 0.1)\
+                response = requests.post(url + endpoint, json=payload, headers=headers)\
+                self.last_request = time.time()\
+        finally:\
+            self.LOCK = False\
+        return response\
+\
+if __name__ == "__main__":\
+    algo = API(apikey, username, password)\
+    if login := algo.LoginUser():\
+        try:\
+            print(login)\
+        except Exception as e:\
+            print(f"Hata olu\uc0\u351 tu: \{e\}")\
+\
+\'f6rnek node js kodu:\
+const axios = require('axios');\
+const crypto = require('crypto');\
+\
+const api_key = ""; // API Key'inizi Buraya Giriniz\
+const username = ""; // TC veya Denizbank Kullan\uc0\u305 c\u305  Ad\u305 n\u305 z\u305  Buraya Giriniz\
+const password = ""; // Denizbank \uc0\u304 nternet Bankac\u305 l\u305 \u287 \u305  \u350 ifrenizi Buraya Giriniz\
+\
+class API \{\
+    constructor(api_key, username, password) \{\
+        try \{\
+            this.api_code = api_key.split("-")[1];\
+        \} catch (e) \{\
+            this.api_code = api_key;\
+        \}\
+        this.api_key = "API-" + this.api_code;\
+        this.username = username;\
+        this.password = password;\
+        this.api_hostname = "https://www.algolab.com.tr";\
+        this.api_url = this.api_hostname + "/api";\
+        this.headers = \{ "APIKEY": this.api_key \};\
+        this.last_request = 0.0;\
+        this.LOCK = false;\
+    \}\
+\
+    async LoginUser() \{\
+        try \{\
+            const u = this.encrypt(this.username);\
+            const p = this.encrypt(this.password);\
+            const payload = \{ username: u, password: p \};\
+            const endpoint = "/api/LoginUser";\
+            const resp = await this.post(endpoint, payload, true);\
+            return resp.data;\
+        \} catch (e) \{\
+            console.log(`LoginUser() fonksiyonunda hata olu\uc0\u351 tu: $\{e\}`);\
+        \}\
+    \}\
+\
+    async post(endpoint, payload, login = false) \{\
+        const url = this.api_url + endpoint;\
+        let headers = \{\};\
+        if (!login) \{\
+            const checker = this.make_checker(endpoint, payload);\
+            headers = \{\
+                "APIKEY": this.api_key,\
+                "Checker": checker,\
+                "Authorization": this.hash\
+            \};\
+        \} else \{\
+            headers = \{ "APIKEY": this.api_key \};\
+        \}\
+        return this._request("POST", url, payload, headers);\
+    \}\
+\
+    encrypt(text) \{\
+        const iv = Buffer.alloc(16, 0);\
+        const key = Buffer.from(this.api_code, 'base64');\
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);\
+        let encrypted = cipher.update(text, 'utf8', 'base64');\
+        encrypted += cipher.final('base64');\
+        return encrypted;\
+    \}\
+\
+    make_checker(endpoint, payload) \{\
+        const body = Object.keys(payload).length > 0 ? JSON.stringify(payload).replace(/\\s+/g, '') : "";\
+        const data = this.api_key + this.api_hostname + endpoint + body;\
+        return crypto.createHash('sha256').update(data).digest('hex');\
+    \}\
+\
+    async _request(method, url, payload, headers) \{\
+        while (this.LOCK) \{\
+            await new Promise(resolve => setTimeout(resolve, 100));\
+        \}\
+        this.LOCK = true;\
+        try \{\
+            let response;\
+            if (method === "POST") \{\
+                const t = Date.now();\
+                const diff = t - this.last_request;\
+                const wait_for = this.last_request > 0 && diff < 5000; // son i\uc0\u351 lemden ge\'e7en s\'fcre 5 saniyeden k\'fc\'e7\'fckse bekle\
+                if (wait_for) \{\
+                    await new Promise(resolve => setTimeout(resolve, 5000 - diff + 100));\
+                \}\
+                response = await axios.post(url, payload, \{ headers \});\
+                this.last_request = Date.now();\
+            \}\
+            return response;\
+        \} finally \{\
+            this.LOCK = false;\
+        \}\
+    \}\
+\}\
+(async () => \{\
+    const algo = new API(api_key, username, password);\
+    const login = await algo.LoginUser();\
+    if (login) \{\
+        try \{\
+            console.log(login);\
+            content = login.content;\
+            token = content.token;\
+            console.log(token);\
+        \} catch (e) \{\
+            console.log(`Hata olu\uc0\u351 tu: $\{e\}`);\
+        \}\
+    \}\
+\})();\
+\
+Kullan\uc0\u305 c\u305  Giri\u351 i: Oturum A\'e7ma\
+Kullan\uc0\u305 c\u305  giri\u351 i Sms alma metodunda al\u305 nan token ve sistemdeki kay\u305 tl\u305  telefonunuza gelen kod ile hash kodu alman\u305 z\u305  sa\u287 lar.\
+\
+Http \uc0\u304 ste\u287 i: POST /api/LoginUserControl\
+Http Headers Content-Type: application/json\
+APIKEY: Ba\uc0\u351 vuru Sonucu Al\u305 nan API-KEY\
+ \
+\
+\uc0\u304 stek Parametreleri\
+\
+Parametre Ad\uc0\u305 	Parametre Tipi	A\'e7\u305 klama\
+token	String	SMS Alma metotundaki token\
+Password	String	SMS Kodu\
+\'d6rnek Request Body\
+\
+\{\
+   "token": "Ys/WhU/D37vO71VIBumDRhZLmkcMlzyb3TKJVWxLlpb/4BByYLNfQ07dEe66P3Ab",\
+   "Password": "9LHZEiA2AhKsAtM4yOOrEw=="\
+\}\
+\
+ \
+\
+Sonu\'e7 Parametreleri\
+\
+Parametre Ad\uc0\u305 	Parametre Tipi	A\'e7\u305 klama\
+Hash	String	Oturum s\'fcresi boyunca eri\uc0\u351 im sa\u287 lanacak oturum anahtar\u305 d\u305 r.\
+ \
+\
+\'d6rnek Response:\
+\
+\{\
+   "success": true,\
+   "message": "",\
+   "content": \{\
+      "hash": "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpX VCJ9.eyJBdXRob3JpemF0aW9uIjoiQXV0aG9yaXplZCIsIkN1c3RvbWVyTm8iOiIxMzQ1MTcyMCIsIk5ld3NsZXR0ZXIi OiJUcnVlIiwiSXNCbG9ja2VkIjoiRmFsc2UiLCJFbWFpbCI6IjEzNDUxNzIwIiwiVXNlcklkIjoiMTAxIiwiRGVuaXpiYW5rIjoi VHJ1ZSIsIm5iZiI6MTY1MzQ4NjMxMCwiZXhwIjoxNjUzNTcyNzEwfQ.8PtF5zNa24bSr3edBuqzpeWqbgxK2rLRXQReovoC2c"\
+   \}\
+\}\
+\
+\'d6rnek python kodu:\
+import requests, hashlib, json, inspect, time, base64\
+from Crypto.Cipher import AES\
+from Crypto.Util.Padding import pad\
+\
+# Kullan\uc0\u305 c\u305  Bilgileri\
+apikey="" # API Key'inizi Buraya Giriniz\
+username = "" # TC veya Denizbank Kullan\uc0\u305 c\u305  Ad\u305 n\u305 z\u305  Buraya Giriniz\
+password = "" # Denizbank \uc0\u304 nternet Bankac\u305 l\u305 \u287 \u305  \u350 ifrenizi Buraya Giriniz\
+token = "" # Login olduktan sonra ald\uc0\u305 \u287 \u305 n\u305 z token\
+sms = "" # LoginUser'dan sonra kay\uc0\u305 tl\u305  cep telefonuna gelen SMS kodu\
+\
+# \uc0\u304 stek g\'f6nderilecek host bilgileri\
+hostname = "www.algolab.com.tr" # \uc0\u304 stek at\u305 lacak web sitesi\
+api_hostname = f"https://\{hostname\}" # HTTPS eklentisi\
+api_url = api_hostname + "/api" # API iste\uc0\u287 inin at\u305 d\u305 \u287 \u305  k\u305 s\u305 m\
+\
+class API():\
+    def __init__(self, api_key, username, password, token, sms):\
+        """\
+        api_key: API-KEY\
+        username: TC Kimlik No\
+        password: Hesap \uc0\u350 ifreniz\
+        token: Giri\uc0\u351  yapt\u305 ktan sonra al\u305 nan token\
+        sms: Giri\uc0\u351  yapt\u305 ktan sonra al\u305 nan sms\
+        """\
+        try:\
+            self.api_code = api_key.split("-")[1]\
+        except Exception:\
+            self.api_code = api_key\
+        self.api_key = "API-" + self.api_code\
+        self.username = username\
+        self.password = password\
+        self.api_hostname = api_hostname\
+        self.api_url = api_url\
+        self.headers = \{"APIKEY": self.api_key\}\
+        self.token = token\
+        self.last_request = 0.0\
+        self.LOCK = False\
+\
+    def LoginUserControl(self):\
+        try:\
+            self.sms_code = sms\
+            f = inspect.stack()[0][3]\
+            t = self.encrypt(self.token)\
+            s = self.encrypt(self.sms_code)\
+            payload = \{'token': t, 'password': s\}\
+            endpoint = "/api/LoginUserControl"\
+            resp = self.post(endpoint, payload=payload, login=True)\
+            return resp.json()\
+        except Exception as e:\
+            print(f"\{f\}() fonsiyonunda hata olu\uc0\u351 tu: \{e\}")\
+        \
+    def post(self, endpoint, payload, login=False):\
+        url = self.api_url\
+        if not login:\
+            checker = self.make_checker(endpoint, payload)\
+            headers = \{"APIKEY": self.api_key,\
+                       "Checker": checker,\
+                       "Authorization": self.hash\
+                       \}\
+        else:\
+            headers = \{"APIKEY": self.api_key\}\
+        return self._request("POST", url, endpoint, payload=payload, headers=headers)\
+            \
+    def encrypt(self, text):\
+        iv = b'\\0' * 16\
+        key = base64.b64decode(self.api_code.encode('utf-8'))\
+        cipher = AES.new(key, AES.MODE_CBC, iv)\
+        bytes = text.encode()\
+        padded_bytes = pad(bytes, 16)\
+        r = cipher.encrypt(padded_bytes)\
+        return base64.b64encode(r).decode("utf-8")\
+\
+    def make_checker(self, endpoint, payload):\
+        body = json.dumps(payload).replace(' ', '') if len(payload) > 0 else ""\
+        data = self.api_key + self.api_hostname + endpoint + body\
+        return hashlib.sha256(data.encode('utf-8')).hexdigest()\
+\
+    def _request(self, method, url, endpoint, payload, headers):\
+        while self.LOCK:\
+            time.sleep(0.1)\
+        self.LOCK = True\
+        try:\
+            response = ""\
+            if method == "POST":\
+                t = time.time()\
+                diff = t - self.last_request\
+                wait_for = self.last_request > 0.0 and diff < 5.0 # son i\uc0\u351 lemden ge\'e7en s\'fcre 5 saniyeden k\'fc\'e7\'fckse bekle\
+                if wait_for:\
+                    time.sleep(5 - diff + 0.1)\
+                response = requests.post(url + endpoint, json=payload, headers=headers)\
+                self.last_request = time.time()\
+        finally:\
+            self.LOCK = False\
+        return response\
+\
+if __name__ == "__main__":\
+    algo = API(apikey, username, password, token, sms)\
+    if user_control := algo.LoginUserControl():\
+        try:\
+            print(user_control)\
+        except Exception as e:\
+            print(f"Hata olu\uc0\u351 tu: \{e\}")\
+\
+\'d6rnek node js kodu:\
+const axios = require('axios');\
+const crypto = require('crypto');\
+const readline = require('readline');\
+\
+const api_key = ""; // API Key'inizi Buraya Giriniz\
+const username = ""; // TC veya Denizbank Kullan\uc0\u305 c\u305  Ad\u305 n\u305 z\u305  Buraya Giriniz\
+const password = ""; // Denizbank \uc0\u304 nternet Bankac\u305 l\u305 \u287 \u305  \u350 ifrenizi Buraya Giriniz\
+const token = ""; // Login olduktan sonra ald\uc0\u305 \u287 \u305 n\u305 z token\
+const sms_code = ""; // Login olduktan sonra kay\uc0\u305 tl\u305  telefon numaran\u305 za gelen sms kodu\
+\
+class API \{\
+    constructor(api_key, username, password, token, sms_code) \{\
+        try \{\
+            this.api_code = api_key.split("-")[1];\
+        \} catch (e) \{\
+            this.api_code = api_key;\
+        \}\
+        this.api_key = "API-" + this.api_code;\
+        this.username = username;\
+        this.password = password;\
+        this.api_hostname = "https://www.algolab.com.tr";\
+        this.api_url = this.api_hostname + "/api";\
+        this.headers = \{ "APIKEY": this.api_key \};\
+        this.token = token;\
+        this.sms_code = sms_code;\
+        this.last_request = 0.0;\
+        this.LOCK = false;\
+    \}\
+\
+    async LoginUserControl() \{\
+        try \{\
+            const t = this.encrypt(this.token);\
+            const s = this.encrypt(this.sms_code);\
+            const payload = \{ token: t, password: s \};\
+            const endpoint = "/api/LoginUserControl";\
+            const resp = await this.post(endpoint, payload, true);\
+            return resp.data;\
+        \} catch (e) \{\
+            console.log(`LoginUserControl() fonksiyonunda hata olu\uc0\u351 tu: $\{e\}`);\
+        \}\
+    \}\
+\
+    async post(endpoint, payload, login = false) \{\
+        const url = this.api_url + endpoint;\
+        let headers = \{\};\
+        if (!login) \{\
+            const checker = this.make_checker(endpoint, payload);\
+            headers = \{\
+                "APIKEY": this.api_key,\
+                "Checker": checker,\
+                "Authorization": this.hash\
+            \};\
+        \} else \{\
+            headers = \{ "APIKEY": this.api_key \};\
+        \}\
+        return this._request("POST", url, payload, headers);\
+    \}\
+\
+    encrypt(text) \{\
+        const iv = Buffer.alloc(16, 0);\
+        const key = Buffer.from(this.api_code, 'base64');\
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);\
+        let encrypted = cipher.update(text, 'utf8', 'base64');\
+        encrypted += cipher.final('base64');\
+        return encrypted;\
+    \}\
+\
+    make_checker(endpoint, payload) \{\
+        const body = Object.keys(payload).length > 0 ? JSON.stringify(payload).replace(/\\s+/g, '') : "";\
+        const data = this.api_key + this.api_hostname + endpoint + body;\
+        return crypto.createHash('sha256').update(data).digest('hex');\
+    \}\
+\
+    async _request(method, url, payload, headers) \{\
+        while (this.LOCK) \{\
+            await new Promise(resolve => setTimeout(resolve, 100));\
+        \}\
+        this.LOCK = true;\
+        try \{\
+            let response;\
+            if (method === "POST") \{\
+                const t = Date.now();\
+                const diff = t - this.last_request;\
+                const wait_for = this.last_request > 0 && diff < 5000; // son i\uc0\u351 lemden ge\'e7en s\'fcre 5 saniyeden k\'fc\'e7\'fckse bekle\
+                if (wait_for) \{\
+                    await new Promise(resolve => setTimeout(resolve, 5000 - diff + 100));\
+                \}\
+                response = await axios.post(url, payload, \{ headers \});\
+                this.last_request = Date.now();\
+            \}\
+            return response;\
+        \} finally \{\
+            this.LOCK = false;\
+        \}\
+    \}\
+\}\
+\
+(async () => \{\
+    \
+    const algo = new API(api_key, username, password, token, sms_code);\
+    const userControl = await algo.LoginUserControl();\
+    if (userControl) \{\
+        try \{\
+            console.log(userControl);\
+            content = userControl.Content;\
+            console.log(content);\
+        \} catch (e) \{\
+            console.log(`Hata olu\uc0\u351 tu: $\{e\}`);\
+        \}\
+    \}\
+\})();\
+\
+giri\uc0\u351  yapma sorununu \'e7\'f6zersen sevinirim.}

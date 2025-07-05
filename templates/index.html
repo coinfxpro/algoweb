@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolab Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .profit {
+            color: green;
+        }
+        .loss {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Algolab Dashboard</h1>
+
+        <!-- Portfolio Summary -->
+        <div class="card">
+            <div class="card-header">
+                Portföy Özeti
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Toplam Maliyet</h5>
+                        <p class="h3" id="totalCost">₺0.00</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Toplam Değer</h5>
+                        <p class="h3" id="totalValue">₺0.00</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Kar/Zarar</h5>
+                        <p class="h3" id="profitLoss">₺0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Orders -->
+        <div class="card">
+            <div class="card-header">
+                Bekleyen Emirler
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Sembol</th>
+                            <th>Yön</th>
+                            <th>Fiyat</th>
+                            <th>Lot</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingOrders">
+                        <!-- Pending orders will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+            <div class="card-header">
+                Son İşlemler
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Sembol</th>
+                            <th>Yön</th>
+                            <th>Fiyat</th>
+                            <th>Lot</th>
+                            <th>Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTransactions">
+                        <!-- Recent transactions will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateDashboard() {
+            // Update portfolio summary
+            $.get('/api/portfolio_summary', function(data) {
+                $('#totalCost').text('₺' + data.total_cost.toFixed(2));
+                $('#totalValue').text('₺' + data.total_value.toFixed(2));
+                
+                const profitLoss = data.total_value - data.total_cost;
+                $('#profitLoss')
+                    .text('₺' + Math.abs(profitLoss).toFixed(2))
+                    .removeClass('profit loss')
+                    .addClass(profitLoss >= 0 ? 'profit' : 'loss')
+                    .prepend(profitLoss >= 0 ? '+' : '-');
+            });
+
+            // Update pending orders
+            $.get('/api/pending_orders', function(data) {
+                const tbody = $('#pendingOrders');
+                tbody.empty();
+                
+                data.forEach(order => {
+                    tbody.append(`
+                        <tr>
+                            <td>${order.symbol}</td>
+                            <td>${order.direction}</td>
+                            <td>${order.price}</td>
+                            <td>${order.lot}</td>
+                            <td>${order.status}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="cancelOrder('${order.id}')">
+                                    <i class="fa fa-times"></i> İptal
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+
+            // Update recent transactions
+            $.get('/api/recent_transactions', function(data) {
+                const tbody = $('#recentTransactions');
+                tbody.empty();
+                
+                data.forEach(transaction => {
+                    tbody.append(`
+                        <tr>
+                            <td>${transaction.date}</td>
+                            <td>${transaction.symbol}</td>
+                            <td>${transaction.direction}</td>
+                            <td>${transaction.price}</td>
+                            <td>${transaction.lot}</td>
+                            <td>${transaction.amount}</td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm('Bu emri iptal etmek istediğinizden emin misiniz?')) {
+                $.post('/api/cancel_order', { order_id: orderId }, function(response) {
+                    if (response.success) {
+                        alert('Emir başarıyla iptal edildi.');
+                        updateDashboard();
+                    } else {
+                        alert('Emir iptal edilirken bir hata oluştu: ' + response.message);
+                    }
+                });
+            }
+        }
+
+        // Update dashboard every 30 seconds
+        $(document).ready(function() {
+            updateDashboard();
+            setInterval(updateDashboard, 30000);
+        });
+    </script>
+</body>
+</html>

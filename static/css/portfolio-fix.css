@@ -1,0 +1,37 @@
+/* Portföy görünürlük düzeltmeleri */
+.table {
+    color: #e9ecef !important;
+}
+
+.table tbody tr {
+    color: #e9ecef !important;
+}
+
+/* T+1 ve T+2 bakiyeleri için özel stil */
+.negative-balance {
+    color: #ff6b6b !important;
+}
+
+.positive-balance {
+    color: #69db7c !important;
+}
+
+/* Portföy tablosu için ek düzeltmeler */
+.portfolio-table th,
+.portfolio-table td {
+    color: #e9ecef !important;
+}
+
+/* Koyu arka plan üzerinde görünürlüğü artırmak için */
+.card {
+    background-color: #2a2a2a;
+}
+
+.card-header {
+    background-color: #222222;
+}
+
+/* Hover efekti */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.075) !important;
+}

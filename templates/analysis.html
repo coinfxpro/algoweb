@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h2 class="mb-4">Piyasa Takip</h2>
+    
+    <!-- Piyasa Özeti -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Piyasa Özeti</h5>
+                    <span class="badge bg-primary">{{ daily_transactions|length }} İşlem</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">BIST 100</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Son Değer:</span>
+                                <span class="fw-bold">8,754.32</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Değişim:</span>
+                                <span class="fw-bold text-success">+1.25%</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Döviz</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>USD/TRY:</span>
+                                <span class="fw-bold">32.45</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>EUR/TRY:</span>
+                                <span class="fw-bold">35.12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popüler Hisseler -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Popüler Hisseler</h5>
+                <button id="refreshStocks" class="btn btn-sm btn-primary"><i class="fas fa-sync-alt me-2"></i>Yenile</button>
+            </div>
+        </div>
+        
+        {% for stock in popular_stocks %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card stock-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">{{ stock.symbol }}</h5>
+                        <span class="badge {% if '-' in stock.change %}bg-danger{% else %}bg-success{% endif %}">{{ stock.change_percent }}</span>
+                    </div>
+                    <h6 class="text-muted mb-3">{{ stock.name }}</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Son Fiyat:</span>
+                        <span class="fw-bold">{{ stock.price }} ₺</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Değişim:</span>
+                        <span class="fw-bold {% if '-' in stock.change %}text-danger{% else %}text-success{% endif %}">{{ stock.change }} ₺</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-sm btn-outline-primary w-100 view-details" data-symbol="{{ stock.symbol }}">Detaylar</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Günlük İşlemler -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Günlük İşlemler</h5>
+                    <i class="fas fa-exchange-alt text-primary"></i>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Sembol</th>
+                                    <th>Alış/Satış</th>
+                                    <th>Miktar</th>
+                                    <th>Fiyat</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                    <th>İşlem Saati</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in daily_transactions %}
+                                <tr>
+                                    <td><strong>{{ transaction.ticker }}</strong></td>
+                                    <td>
+                                        <span class="badge {% if transaction.buysell == 'Alış' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ transaction.buysell }}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaction.ordersize }}</td>
+                                    <td>{{ transaction.price }} ₺</td>
+                                    <td>{{ transaction.amount }} ₺</td>
+                                    <td>
+                                        <span class="badge {% if transaction.status == 'Gerçekleşti' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ transaction.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaction.timetransaction }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Fiyat Grafiği</h5>
+                        <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Hisse bilgilerini güncelleme fonksiyonu
+    function refreshStockData() {
+        const refreshButton = document.getElementById('refreshStocks');
+        refreshButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yenileniyor...';
+        
+        // Gerçek uygulamada burada API'den veri çekilecek
+        // Şimdilik sayfayı yeniliyoruz
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+    
+    // Yenile butonuna tıklandığında
+    const refreshButton = document.getElementById('refreshStocks');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', refreshStockData);
+    }
+    
+    // Detaylar butonlarına tıklandığında
+    const detailButtons = document.querySelectorAll('.view-details');
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const symbol = this.getAttribute('data-symbol');
+            alert(`${symbol} için detaylı bilgiler gösterilecek. Bu özellik henüz geliştirme aşamasındadır.`);
+        });
+    });
+    
+    // Hisse kartlarını hover efekti ile canlandırma
+    const stockCards = document.querySelectorAll('.stock-card');
+    stockCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('shadow-lg');
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('shadow-lg');
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+
+<style>
+.stock-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-left: 4px solid transparent;
+}
+
+.stock-card:hover {
+    border-left-color: #007bff;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+}
+</style>
+{% endblock %}

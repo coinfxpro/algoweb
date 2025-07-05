@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h2 class="mb-4">Strateji Ekle</h2>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Yeni Strateji</h5>
+                    <i class="fas fa-plus-circle text-primary"></i>
+                </div>
+                <div class="card-body">
+                    <form id="strategyForm">
+                        <div class="mb-3">
+                            <label for="strategyName" class="form-label">Strateji Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" class="form-control" id="strategyName" name="strategyName" placeholder="Strateji adını girin" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="strategyType" class="form-label">Strateji Tipi</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-code-branch"></i></span>
+                                <select class="form-select" id="strategyType" name="strategyType" required>
+                                    <option value="">Seçiniz...</option>
+                                    <option value="predefined">Hazır İndikatör</option>
+                                    <option value="custom">Özel Python Kodu</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Hazır İndikatör Seçenekleri -->
+                        <div id="predefinedOptions" class="mb-3" style="display: none;">
+                            <label class="form-label">İndikatör Seçimi</label>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="maCheck" name="indicators" value="ma">
+                                        <label class="form-check-label" for="maCheck">
+                                            Hareketli Ortalama Kesişimi (MA)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body indicator-settings" id="maSettings" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Kısa MA Periyodu</label>
+                                                <input type="number" class="form-control" name="shortMA" value="9">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Uzun MA Periyodu</label>
+                                                <input type="number" class="form-control" name="longMA" value="21">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="rsiCheck" name="indicators" value="rsi">
+                                        <label class="form-check-label" for="rsiCheck">
+                                            Göreceli Güç İndeksi (RSI)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body indicator-settings" id="rsiSettings" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">RSI Periyodu</label>
+                                                <input type="number" class="form-control" name="rsiPeriod" value="14">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Aşırı Satım</label>
+                                                <input type="number" class="form-control" name="rsiOversold" value="30">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Aşırı Alım</label>
+                                                <input type="number" class="form-control" name="rsiOverbought" value="70">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="stochCheck" name="indicators" value="stochastic">
+                                        <label class="form-check-label" for="stochCheck">
+                                            Stokastik Osilatör
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body indicator-settings" id="stochSettings" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">K Periyodu</label>
+                                                <input type="number" class="form-control" name="stochK" value="14">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">D Periyodu</label>
+                                                <input type="number" class="form-control" name="stochD" value="3">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Aşırı Satım</label>
+                                                <input type="number" class="form-control" name="stochOversold" value="20">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Aşırı Alım</label>
+                                                <input type="number" class="form-control" name="stochOverbought" value="80">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="adxCheck" name="indicators" value="adx">
+                                        <label class="form-check-label" for="adxCheck">
+                                            Ortalama Yön İndeksi (ADX)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card-body indicator-settings" id="adxSettings" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">ADX Periyodu</label>
+                                                <input type="number" class="form-control" name="adxPeriod" value="14">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Trend Eşiği</label>
+                                                <input type="number" class="form-control" name="adxThreshold" value="25">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Özel Python Kodu -->
+                        <div id="customCodeOptions" class="mb-3" style="display: none;">
+                            <label for="pythonCode" class="form-label">Python Kodu</label>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> 
+                                Stratejinizi Python kodu olarak yazabilirsiniz. Kodunuz, <code>data</code> adlı bir DataFrame üzerinde çalışacak ve bir sinyal (1: Alış, -1: Satış, 0: Bekle) döndürmelidir.
+                            </div>
+                            <div class="code-editor-container">
+                                <textarea class="form-control code-editor" id="pythonCode" name="pythonCode" rows="15" style="font-family: monospace;">
+# Örnek strateji kodu
+def strategy(data):
+    """
+    Örnek bir strateji fonksiyonu.
+    
+    Parameters:
+    data (DataFrame): OHLCV verileri içeren DataFrame
+                     (open, high, low, close, volume)
+    
+    Returns:
+    int: 1 (Alış sinyali), -1 (Satış sinyali), 0 (Sinyal yok)
+    """
+    # Son 9 günlük kapanış fiyatlarının ortalaması
+    short_ma = data['close'].rolling(window=9).mean()
+    
+    # Son 21 günlük kapanış fiyatlarının ortalaması
+    long_ma = data['close'].rolling(window=21).mean()
+    
+    # Kesişim kontrolü
+    if short_ma.iloc[-2] < long_ma.iloc[-2] and short_ma.iloc[-1] > long_ma.iloc[-1]:
+        return 1  # Alış sinyali (Altın Kesişim)
+    elif short_ma.iloc[-2] > long_ma.iloc[-2] and short_ma.iloc[-1] < long_ma.iloc[-1]:
+        return -1  # Satış sinyali (Ölüm Kesişimi)
+    else:
+        return 0  # Sinyal yok
+</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="stockSymbol" class="form-label">Uygulama Sembolü</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" class="form-control" id="stockSymbol" name="stockSymbol" placeholder="Örn: THYAO" required>
+                            </div>
+                            <small class="form-text text-muted">Stratejiyi uygulamak istediğiniz hisse senedi sembolünü girin.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="timeframe" class="form-label">Zaman Dilimi</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <select class="form-select" id="timeframe" name="timeframe" required>
+                                    <option value="1m">1 Dakika</option>
+                                    <option value="5m">5 Dakika</option>
+                                    <option value="15m">15 Dakika</option>
+                                    <option value="30m">30 Dakika</option>
+                                    <option value="1h">1 Saat</option>
+                                    <option value="4h">4 Saat</option>
+                                    <option value="1d" selected>Günlük</option>
+                                    <option value="1w">Haftalık</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" id="testStrategyBtn">
+                                <i class="fas fa-vial me-1"></i> Test Et
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Bilgi</h5>
+                    <i class="fas fa-info-circle text-primary"></i>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Hazır İndikatörler</h6>
+                    <p>Strateji oluşturmak için aşağıdaki hazır indikatörleri kullanabilirsiniz:</p>
+                    <ul class="mb-4">
+                        <li><strong>MA Kesişimi:</strong> Kısa ve uzun dönem hareketli ortalamalar arasındaki kesişimleri tespit eder.</li>
+                        <li><strong>RSI:</strong> Aşırı alım/satım durumlarını tespit etmek için kullanılır.</li>
+                        <li><strong>Stokastik:</strong> Fiyatın belirli bir dönemdeki en yüksek ve en düşük değerlerine göre konumunu ölçer.</li>
+                        <li><strong>ADX:</strong> Trendin gücünü ölçer.</li>
+                    </ul>
+                    
+                    <h6 class="fw-bold mb-3">Özel Python Kodu</h6>
+                    <p>Kendi stratejinizi Python kodu olarak yazabilirsiniz. Kodunuz şu değişkenlere erişebilir:</p>
+                    <ul>
+                        <li><code>data</code>: OHLCV verileri içeren DataFrame</li>
+                        <li><code>open</code>: Açılış fiyatları</li>
+                        <li><code>high</code>: En yüksek fiyatlar</li>
+                        <li><code>low</code>: En düşük fiyatlar</li>
+                        <li><code>close</code>: Kapanış fiyatları</li>
+                        <li><code>volume</code>: İşlem hacimleri</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i> 
+                        Stratejinizi test etmeden önce kaydetmeniz önerilir. Backtest sonuçları, geçmiş performansı gösterir ve gelecekteki performansın garantisi değildir.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Strateji tipi değiştiğinde ilgili alanları göster/gizle
+    const strategyType = document.getElementById('strategyType');
+    const predefinedOptions = document.getElementById('predefinedOptions');
+    const customCodeOptions = document.getElementById('customCodeOptions');
+    
+    strategyType.addEventListener('change', function() {
+        if (this.value === 'predefined') {
+            predefinedOptions.style.display = 'block';
+            customCodeOptions.style.display = 'none';
+        } else if (this.value === 'custom') {
+            predefinedOptions.style.display = 'none';
+            customCodeOptions.style.display = 'block';
+        } else {
+            predefinedOptions.style.display = 'none';
+            customCodeOptions.style.display = 'none';
+        }
+    });
+    
+    // İndikatör checkbox'ları değiştiğinde ayarları göster/gizle
+    const indicatorChecks = document.querySelectorAll('input[name="indicators"]');
+    indicatorChecks.forEach(check => {
+        check.addEventListener('change', function() {
+            const settingsId = this.id.replace('Check', 'Settings');
+            const settingsDiv = document.getElementById(settingsId);
+            
+            if (this.checked) {
+                settingsDiv.style.display = 'block';
+            } else {
+                settingsDiv.style.display = 'none';
+            }
+        });
+    });
+    
+    // Form gönderildiğinde
+    const strategyForm = document.getElementById('strategyForm');
+    strategyForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Form verilerini topla
+        const formData = new FormData(this);
+        const strategyData = {};
+        
+        for (const [key, value] of formData.entries()) {
+            strategyData[key] = value;
+        }
+        
+        // Stratejiyi kaydet
+        fetch('/api/save_strategy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(strategyData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Strateji başarıyla kaydedildi!');
+                // Başarılı kayıt sonrası yönlendirme yapılabilir
+                window.location.href = '/my_strategies';
+            } else {
+                alert('Strateji kaydedilirken bir hata oluştu: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+        });
+    });
+    
+    // Test butonu tıklandığında
+    const testStrategyBtn = document.getElementById('testStrategyBtn');
+    testStrategyBtn.addEventListener('click', function() {
+        // Strateji verilerini topla
+        const formData = new FormData(strategyForm);
+        const strategyData = {};
+        
+        for (const [key, value] of formData.entries()) {
+            strategyData[key] = value;
+        }
+        
+        // Backtest sayfasına yönlendir
+        sessionStorage.setItem('testStrategy', JSON.stringify(strategyData));
+        window.location.href = '/backtest';
+    });
+});
+</script>
+{% endblock %}
