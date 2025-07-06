@@ -22,6 +22,7 @@
                             <th>Durum</th>
                             <th>Emir ID</th>
                             <th>Kaynak</th>
+                            <th>Hata Detayı</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,12 +46,19 @@
                                 <span class="badge bg-success"><i class="fas fa-check me-1"></i> Gerçekleşti</span>
                                 {% elif order.status == 'cancelled' %}
                                 <span class="badge bg-danger"><i class="fas fa-ban me-1"></i> İptal</span>
+                                {% elif order.status.startswith('error') %}
+                                <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i> Hata</span>
                                 {% else %}
                                 <span class="badge bg-secondary"><i class="fas fa-info-circle me-1"></i> {{ order.status }}</span>
                                 {% endif %}
                             </td>
                             <td><span class="text-muted">#</span>{{ order.order_id }}</td>
                             <td><span class="badge bg-info">{{ order.source }}</span></td>
+                            <td>
+                                {% if order.error %}
+                                <span class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> {{ order.error }}</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

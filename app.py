@@ -377,16 +377,35 @@ def tradingview_webhook():
 
     order_status = 'waiting'
     order_id = None
+    error_message = None
 
     try:
         if 'api_instance' in globals() and api_instance:
             res = api_instance.SendOrder(symbol, side, quantity, price, order_type)
-            # SendOrder API'nin dönüş yapısı dict olabilir
+            print(f"Webhook API yanıtı: {res}")
+            
+            # API yanıtını detaylı kontrol et
             if isinstance(res, dict):
-                order_id = res.get('orderId') or res.get('OrderID') or res.get('id')
-            order_status = 'filled'
+                # success=true olsa bile content kısmında hata mesajı olabilir
+                if res.get('success') is True:
+                    content = res.get('content')
+                    # İçerik bir string ve hata mesajı içeriyorsa
+                    if isinstance(content, str) and ('Error' in content or 'Limit' in content or 'exceed' in content.lower()):
+                        order_status = f'error: {content}'
+                        error_message = content
+                    else:
+                        order_id = res.get('orderId') or res.get('OrderID') or res.get('id')
+                        order_status = 'filled'
+                else:
+                    # API başarısız yanıt döndü
+                    error_message = res.get('message', 'API hatası')
+                    order_status = f'error: {error_message}'
+            else:
+                # Başarılı yanıt, dict olmayan format
+                order_status = 'filled'
     except Exception as e:
-        order_status = f'error: {str(e)}'
+        error_message = str(e)
+        order_status = f'error: {error_message}'
 
     WEBHOOK_ORDERS.appendleft({
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -396,10 +415,11 @@ def tradingview_webhook():
         'price': price or '',
         'status': order_status,
         'order_id': order_id or '',
-        'source': 'TradingView'
+        'source': 'TradingView',
+        'error': error_message
     })
 
-    return jsonify(success=True, status=order_status, order_id=order_id)
+    return jsonify(success=(error_message is None), status=order_status, order_id=order_id, error=error_message)
 
 @app.route('/webhook/orders/data')
 @login_required
