@@ -401,21 +401,21 @@ def tradingview_webhook():
                     content = res.get('content')
                     # İçerik bir string ve hata mesajı içeriyorsa
                     if isinstance(content, str) and ('Error' in content or 'Limit' in content or 'exceed' in content.lower()):
-                        order_status = f'error: {content}'
+                        order_status = f'Hata: {content}'
                         error_message = content
                     else:
                         order_id = res.get('orderId') or res.get('OrderID') or res.get('id')
-                        order_status = 'filled'
+                        order_status = 'Emir İletildi'
                 else:
                     # API başarısız yanıt döndü
                     error_message = res.get('message', 'API hatası')
-                    order_status = f'error: {error_message}'
+                    order_status = f'Hata: {error_message}'
             else:
                 # Başarılı yanıt, dict olmayan format
-                order_status = 'filled'
+                order_status = 'Emir İletildi'
     except Exception as e:
         error_message = str(e)
-        order_status = f'error: {error_message}'
+        order_status = f'Hata: {error_message}'
 
     WEBHOOK_ORDERS.appendleft({
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),

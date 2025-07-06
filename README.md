@@ -109,25 +109,30 @@ https://your-app-url.com/webhook/tradingview
 2. Webhook mesaj formatı:
 ```json
 {
-    "secret": "your-webhook-secret",
+    "passphrase": "your-webhook-secret",
     "symbol": "PAPIL",
     "side": "BUY",  // veya "SELL"
     "type": "MARKET",  // veya "LIMIT"
     "price": "0",  // LIMIT emirleri için fiyat
-    "quantity": "1"
+    "quantity": "0.1"  // Küçük lot değerleri kullanın (0.1, 0.2 vb.)
 }
 ```
+
+3. Webhook Emir Durumları:
+   - **Emir İletildi**: Emir Algolab API'ye başarıyla iletildi
+   - **Hata**: Emir gönderiminde bir hata oluştu (hata detayı gösterilir)
+   - **Bekliyor**: Emir işleniyor
 
 ### Emir Tipleri
 
 1. **Market (Piyasa) Emirleri**
 ```json
 {
-    "secret": "your_secret",
+    "passphrase": "your_webhook_secret",
     "symbol": "SASA",
     "side": "BUY",
     "type": "MARKET",
-    "quantity": "1"
+    "quantity": "0.1"
 }
 ```
 - Market emirlerinde `price` belirtmeyin
@@ -136,16 +141,17 @@ https://your-app-url.com/webhook/tradingview
 2. **Limit Emirleri**
 ```json
 {
-    "secret": "your_secret",
+    "passphrase": "your_webhook_secret",
     "symbol": "SASA",
     "side": "BUY",
     "type": "LIMIT",
     "price": "3.55",
-    "quantity": "1"
+    "quantity": "0.1"
 }
 ```
 - Limit emirlerde mutlaka `price` belirtin
 - Emir belirtilen fiyattan gerçekleşir
+- Küçük lot değerleri kullanın (0.1, 0.2 vb.) - böylece "OrderExceedsLimit" hatalarını önlersiniz
 
 ### Önemli Notlar
 
@@ -195,12 +201,12 @@ Webhook'u test etmek için cURL kullanabilirsiniz:
 # Market Emri Testi
 curl -X POST http://localhost:5001/webhook/tradingview \
   -H "Content-Type: application/json" \
-  -d '{"secret":"your_secret","symbol":"SASA","side":"BUY","type":"MARKET","quantity":"1"}'
+  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"MARKET","quantity":"0.1"}'
 
 # Limit Emri Testi
 curl -X POST http://localhost:5001/webhook/tradingview \
   -H "Content-Type: application/json" \
-  -d '{"secret":"your_secret","symbol":"SASA","side":"BUY","type":"LIMIT","price":"3.55","quantity":"1"}'
+  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"LIMIT","price":"3.55","quantity":"0.1"}'
 ```
 
 ## Notlar

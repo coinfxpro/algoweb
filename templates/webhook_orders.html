@@ -42,11 +42,13 @@
                             <td>
                                 {% if order.status == 'waiting' %}
                                 <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i> Bekliyor</span>
+                                {% elif order.status == 'Emir İletildi' %}
+                                <span class="badge bg-primary"><i class="fas fa-paper-plane me-1"></i> Emir İletildi</span>
                                 {% elif order.status == 'filled' %}
                                 <span class="badge bg-success"><i class="fas fa-check me-1"></i> Gerçekleşti</span>
                                 {% elif order.status == 'cancelled' %}
                                 <span class="badge bg-danger"><i class="fas fa-ban me-1"></i> İptal</span>
-                                {% elif order.status.startswith('error') %}
+                                {% elif order.status.startswith('Hata') %}
                                 <span class="badge bg-danger"><i class="fas fa-exclamation-circle me-1"></i> Hata</span>
                                 {% else %}
                                 <span class="badge bg-secondary"><i class="fas fa-info-circle me-1"></i> {{ order.status }}</span>
