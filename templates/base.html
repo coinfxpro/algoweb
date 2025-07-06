@@ -47,11 +47,6 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('analysis') }}" class="{% if request.endpoint == 'analysis' %}active{% endif %}">
-                        <i class="fas fa-chart-pie"></i> Analiz
-                    </a>
-                </li>
-                <li>
                     <a href="{{ url_for('backtest') }}" class="{% if request.endpoint == 'backtest' %}active{% endif %}">
                         <i class="fas fa-history"></i> Backtest
                     </a>
