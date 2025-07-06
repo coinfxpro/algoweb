@@ -359,8 +359,9 @@ def tradingview_webhook():
     if not data:
         return jsonify(success=False, error='JSON body yok'), 400
 
-    # Secret doğrulama
-    if WEBHOOK_SECRET and data.get('secret') != WEBHOOK_SECRET:
+    # Secret doğrulama (TradingView passphrase kullanır)
+    if WEBHOOK_SECRET and data.get('passphrase') != WEBHOOK_SECRET:
+        print(f"[DEBUG] Webhook doğrulama hatası: Gelen passphrase='{data.get('passphrase')}', Beklenen='{WEBHOOK_SECRET}'")
         return jsonify(success=False, error='Secret key hatalı'), 403
 
     symbol = data.get('symbol')
