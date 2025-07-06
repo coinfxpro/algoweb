@@ -23,9 +23,46 @@ OPEN_ORDERS = []  # In-memory list of open orders created via manual trading pag
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Oturum kontrolü
         if 'token' not in session or 'hash' not in session:
             flash('Bu sayfayı görüntülemek için giriş yapmalısınız.', 'warning')
             return redirect(url_for('login'))
+        
+        # Her istekte oturum yenileme işlemi yapalım
+        try:
+            # Son oturum yenileme zamanını kontrol et
+            last_refresh = session.get('last_refresh_time', 0)
+            current_time = time.time()
+            
+            # 10 dakikada bir oturumu yenile (600 saniye)
+            if current_time - last_refresh > 600:
+                print("\n=== Oturum yenileniyor... ===")
+                username = session.get('username')
+                api_key = session.get('api_key')
+                token = session.get('token')
+                hash_value = session.get('hash')
+                
+                # API nesnesini oluştur ve oturumu yenile
+                api = AlgolabAPI(username=username, api_key=api_key)
+                api.token = token
+                api.hash = hash_value
+                
+                # Oturum yenileme işlemi
+                if api.SessionRefresh():
+                    # Oturum başarıyla yenilendi, hash değeri güncellendi
+                    session['hash'] = api.hash
+                    session['last_refresh_time'] = current_time
+                    print("=== Oturum başarıyla yenilendi ===")
+                else:
+                    print("=== Oturum yenileme başarısız! ===")
+                    # Oturum yenileme başarısız olduysa, kullanıcıyı login sayfasına yönlendir
+                    if request.path != url_for('login'):
+                        flash('Oturum süreniz doldu. Lütfen tekrar giriş yapın.', 'warning')
+                        return redirect(url_for('login'))
+        except Exception as e:
+            print(f"Oturum yenileme hatası: {str(e)}")
+            # Hata durumunda sessizce devam et, ana işlevi engelleme
+            
         return f(*args, **kwargs)
     return decorated_function
 

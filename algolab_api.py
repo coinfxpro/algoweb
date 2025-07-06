@@ -27,6 +27,8 @@ class AlgolabAPI:
         # API rate limit: initialize tracking variables
         self.last_request = 0.0
         self._lock = threading.Lock()
+        # Çerez yönetimi için session nesnesi
+        self.session = requests.Session()
         
         # AES şifreleme için anahtar oluştur
         if self.api_key:
@@ -123,7 +125,8 @@ class AlgolabAPI:
                     wait_time = 5 - (now - self.last_request) + 0.01
                     print(f"Rate limit aktif. {wait_time:.2f} sn bekleniyor...")
                     time.sleep(wait_time)
-                response = requests.post(url, json=payload, headers=headers)
+                # Session kullanarak çerezleri otomatik yönet
+                response = self.session.post(url, json=payload, headers=headers)
                 # Update timestamp after request is sent
                 self.last_request = time.time()
             
@@ -131,6 +134,7 @@ class AlgolabAPI:
             print(f"Status Code: {response.status_code}")
             print(f"Response Headers: {response.headers}")
             print(f"Response Content-Type: {response.headers.get('Content-Type', 'Belirtilmemiş')}")
+            print(f"Cookies: {self.session.cookies.get_dict()}")
             
             # Yanıtın ilk 500 karakterini göster
             response_preview = response.text[:500] + "..." if len(response.text) > 500 else response.text
@@ -158,6 +162,11 @@ class AlgolabAPI:
         veya bazı sürümlerde {"success": true} biçiminde JSON dönebilir. Her iki durumu da
         destekleyecek şekilde yanıtı işler. Başarılıysa True, aksi hâlde False döner.
         '''
+        # Eğer hash yoksa yenileme yapılamaz
+        if not self.hash:
+            print("SessionRefresh: Hash değeri yok, oturum yenilenemiyor.")
+            return False
+            
         endpoint = "/api/SessionRefresh"
         payload = {}
 
@@ -189,6 +198,11 @@ class AlgolabAPI:
             # Yanıt sözlük ise 'success' anahtarını kontrol et
             if isinstance(result, dict):
                 if result.get("success") is True:
+                    # Eğer yanıtta yeni bir hash varsa, onu kullan
+                    content = result.get('content', {})
+                    if isinstance(content, dict) and 'hash' in content:
+                        self.hash = content['hash']
+                        print(f"SessionRefresh: Yeni hash alındı: {self.hash[:20]}...")
                     print("SessionRefresh: Başarılı (success:true).")
                     return True
                 print(f"SessionRefresh: success:false veya anahtar eksik – yanıt: {result}")
@@ -279,9 +293,9 @@ class AlgolabAPI:
             enc_sms = self.encrypt(sms_code)
             payload = {
                 "token": enc_token,
-                "password": enc_sms
-                # Not: API dokümanlarında bazen 'Password' anahtarı büyük 'P' ile verilmektedir.
-                # Gerekirse 'Password': enc_sms şeklinde değiştirilebilir.
+                "password": enc_sms,
+                # API dokümanlarında bazen 'Password' anahtarı büyük 'P' ile verilmektedir.
+                "Password": enc_sms  # Her iki şekilde de gönderelim
             }
             
             endpoint = "/api/LoginUserControl"
@@ -298,6 +312,9 @@ class AlgolabAPI:
                         content = result.get('content', {}) or {}
                         self.hash = content.get('hash')
                         print(f"SMS doğrulama başarılı, hash alındı: {self.hash[:20]}...") if self.hash else print("SMS doğrulama başarılı fakat hash alınamadı")
+                        
+                        # Çerezleri kontrol et ve logla
+                        print(f"Oturum çerezleri: {self.session.cookies.get_dict()}")
                         return True
                     else:
                         self.last_error = result.get("message", "SMS doğrulama başarısız.")
