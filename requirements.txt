@@ -19,8 +19,9 @@ lxml>=4.9.1
 appdirs>=1.4.4
 beautifulsoup4>=4.11.1
 html5lib>=1.1
+# Grafik çizimi için gerekli
+plotly>=5.10.0
 # Aşağıdaki paketler gerekirse daha sonra eklenebilir
 # flask-login
 # flask-sqlalchemy
 # streamlit
-# plotly
