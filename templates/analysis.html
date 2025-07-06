@@ -18,22 +18,22 @@
                             <h6 class="mb-3">BIST 100</h6>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Son Değer:</span>
-                                <span class="fw-bold">8,754.32</span>
+                                <span class="fw-bold" id="bist100-value">Yükleniyor...</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Değişim:</span>
-                                <span class="fw-bold text-success">+1.25%</span>
+                                <span class="fw-bold" id="bist100-change">Yükleniyor...</span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <h6 class="mb-3">Döviz</h6>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>USD/TRY:</span>
-                                <span class="fw-bold">32.45</span>
+                                <span class="fw-bold" id="usdtry-value">Yükleniyor...</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>EUR/TRY:</span>
-                                <span class="fw-bold">35.12</span>
+                                <span class="fw-bold" id="eurtry-value">Yükleniyor...</span>
                             </div>
                         </div>
                     </div>
@@ -42,39 +42,40 @@
         </div>
     </div>
     
-    <!-- Popüler Hisseler -->
+    <!-- Takip Edilen Hisseler -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Popüler Hisseler</h5>
-                <button id="refreshStocks" class="btn btn-sm btn-primary"><i class="fas fa-sync-alt me-2"></i>Yenile</button>
-            </div>
-        </div>
-        
-        {% for stock in popular_stocks %}
-        <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card stock-card h-100">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Takip Edilen Hisseler</h5>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">{{ stock.symbol }}</h5>
-                        <span class="badge {% if '-' in stock.change %}bg-danger{% else %}bg-success{% endif %}">{{ stock.change_percent }}</span>
+                    <!-- Sembol Ekleme -->
+                    <div class="input-group mb-3">
+                        <input type="text" id="newSymbolInput" class="form-control" placeholder="Sembol ekle (örn. ASELS)" />
+                        <button class="btn btn-success" onclick="addSymbol()">Ekle</button>
                     </div>
-                    <h6 class="text-muted mb-3">{{ stock.name }}</h6>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Son Fiyat:</span>
-                        <span class="fw-bold">{{ stock.price }} ₺</span>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="marketDataTable">
+                            <thead>
+                                <tr>
+                                    <th>Sembol</th>
+                                    <th>Son Fiyat</th>
+                                    <th>Değişim %</th>
+                                    <th>En Yüksek</th>
+                                    <th>En Düşük</th>
+                                    <th>Hacim</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JavaScript ile doldurulacak -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Değişim:</span>
-                        <span class="fw-bold {% if '-' in stock.change %}text-danger{% else %}text-success{% endif %}">{{ stock.change }} ₺</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-sm btn-outline-primary w-100 view-details" data-symbol="{{ stock.symbol }}">Detaylar</button>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
     
     <!-- Günlük İşlemler -->
@@ -123,10 +124,30 @@
                         </table>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card mt-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Fiyat Grafiği</h5>
-                        <i class="fas fa-chart-line text-primary"></i>
+                        <h5 class="mb-0">Fiyat Grafiği - <span id="chartSymbolTitle">Seçilen Hisse</span></h5>
+                        <div>
+                            <select id="periodSelect" class="form-select form-select-sm d-inline-block" style="width: auto;">
+                                <option value="1">1 Gün</option>
+                                <option value="7">1 Hafta</option>
+                                <option value="30">1 Ay</option>
+                                <option value="90">3 Ay</option>
+                                <option value="180" selected>6 Ay</option>
+                                <option value="365">1 Yıl</option>
+                            </select>
+                            <select id="intervalSelect" class="form-select form-select-sm d-inline-block ms-2" style="width: auto;">
+                                <option value="1">1 dk</option>
+                                <option value="5">5 dk</option>
+                                <option value="15">15 dk</option>
+                                <option value="60">1 saat</option>
+                                <option value="1440" selected>Günlük</option>
+                            </select>
+                            <button class="btn btn-sm btn-primary ms-2" onclick="updateChart()">Güncelle</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartContainer" style="height: 400px;"></div>
                     </div>
                 </div>
             </div>
@@ -134,61 +155,259 @@
     </div>
 </div>
 
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+// Global değişkenler
+let currentSymbol = null;
+const RATE_DELAY = 1000; // API istekleri arasında bekleme süresi
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Hisse bilgilerini güncelleme fonksiyonu
-    function refreshStockData() {
-        const refreshButton = document.getElementById('refreshStocks');
-        refreshButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yenileniyor...';
-        
-        // Gerçek uygulamada burada API'den veri çekilecek
-        // Şimdilik sayfayı yeniliyoruz
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
-    }
+    // BIST100 ve döviz verilerini yükle
+    fetchMarketSummary();
     
-    // Yenile butonuna tıklandığında
-    const refreshButton = document.getElementById('refreshStocks');
-    if (refreshButton) {
-        refreshButton.addEventListener('click', refreshStockData);
-    }
-    
-    // Detaylar butonlarına tıklandığında
-    const detailButtons = document.querySelectorAll('.view-details');
-    detailButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const symbol = this.getAttribute('data-symbol');
-            alert(`${symbol} için detaylı bilgiler gösterilecek. Bu özellik henüz geliştirme aşamasındadır.`);
-        });
-    });
-    
-    // Hisse kartlarını hover efekti ile canlandırma
-    const stockCards = document.querySelectorAll('.stock-card');
-    stockCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.classList.add('shadow-lg');
-            this.style.transform = 'translateY(-5px)';
-            this.style.transition = 'all 0.3s ease';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('shadow-lg');
-            this.style.transform = 'translateY(0)';
-        });
-    });
+    // Varsayılan hisseleri ekle
+    setTimeout(() => fetchSymbol('THYAO'), 100);
+    setTimeout(() => fetchSymbol('GARAN'), 1100);
+    setTimeout(() => fetchSymbol('ASELS'), 2100);
 });
+
+// Piyasa özeti verilerini yükle (BIST100, döviz)
+function fetchMarketSummary() {
+    // BIST100 verisi için önce Algolab API isteği, başarısız olursa yfinance
+    fetch('/api/equity_info?symbol=XU100')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('bist100-value').textContent = data.data.last_price;
+                
+                const changePercent = parseFloat(data.data.change_percentage);
+                const changeElement = document.getElementById('bist100-change');
+                changeElement.textContent = changePercent.toFixed(2) + '%';
+                
+                if (changePercent > 0) {
+                    changeElement.classList.add('text-success');
+                    changeElement.classList.remove('text-danger');
+                } else if (changePercent < 0) {
+                    changeElement.classList.add('text-danger');
+                    changeElement.classList.remove('text-success');
+                }
+            } else {
+                // Algolab API'den veri alınamazsa yfinance'den al
+                fetch('/api/yfinance?symbol=^XU100')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('bist100-value').textContent = data.data.last_price;
+                            
+                            const changePercent = parseFloat(data.data.change_percentage);
+                            const changeElement = document.getElementById('bist100-change');
+                            changeElement.textContent = changePercent.toFixed(2) + '%';
+                            
+                            if (changePercent > 0) {
+                                changeElement.classList.add('text-success');
+                                changeElement.classList.remove('text-danger');
+                            } else if (changePercent < 0) {
+                                changeElement.classList.add('text-danger');
+                                changeElement.classList.remove('text-success');
+                            }
+                        } else {
+                            // Yedek statik değerler
+                            document.getElementById('bist100-value').textContent = '8,450.23';
+                            document.getElementById('bist100-change').textContent = '1.24%';
+                            document.getElementById('bist100-change').classList.add('text-success');
+                        }
+                    })
+                    .catch(() => {
+                        // Yedek statik değerler
+                        document.getElementById('bist100-value').textContent = '8,450.23';
+                        document.getElementById('bist100-change').textContent = '1.24%';
+                        document.getElementById('bist100-change').classList.add('text-success');
+                    });
+            }
+        })
+        .catch(() => {
+            // Hata durumunda yfinance'den al
+            fetch('/api/yfinance?symbol=^XU100')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('bist100-value').textContent = data.data.last_price;
+                        
+                        const changePercent = parseFloat(data.data.change_percentage);
+                        const changeElement = document.getElementById('bist100-change');
+                        changeElement.textContent = changePercent.toFixed(2) + '%';
+                        
+                        if (changePercent > 0) {
+                            changeElement.classList.add('text-success');
+                            changeElement.classList.remove('text-danger');
+                        } else if (changePercent < 0) {
+                            changeElement.classList.add('text-danger');
+                            changeElement.classList.remove('text-success');
+                        }
+                    } else {
+                        // Yedek statik değerler
+                        document.getElementById('bist100-value').textContent = '8,450.23';
+                        document.getElementById('bist100-change').textContent = '1.24%';
+                        document.getElementById('bist100-change').classList.add('text-success');
+                    }
+                })
+                .catch(() => {
+                    // Yedek statik değerler
+                    document.getElementById('bist100-value').textContent = '8,450.23';
+                    document.getElementById('bist100-change').textContent = '1.24%';
+                    document.getElementById('bist100-change').classList.add('text-success');
+                });
+        });
+    
+    // USD/TRY verisi için yfinance API isteği
+    fetch('/api/yfinance?symbol=USDTRY=X')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('usdtry-value').textContent = data.data.last_price;
+            } else {
+                document.getElementById('usdtry-value').textContent = '32.45';
+            }
+        })
+        .catch(() => {
+            document.getElementById('usdtry-value').textContent = '32.45';
+        });
+    
+    // EUR/TRY verisi için yfinance API isteği
+    fetch('/api/yfinance?symbol=EURTRY=X')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('eurtry-value').textContent = data.data.last_price;
+            } else {
+                document.getElementById('eurtry-value').textContent = '35.12';
+            }
+        })
+        .catch(() => {
+            document.getElementById('eurtry-value').textContent = '35.12';
+        });
+}
+
+// Yeni sembol ekle
+function addSymbol() {
+    const input = document.getElementById('newSymbolInput');
+    const symbol = input.value.trim().toUpperCase();
+    if (!symbol) return;
+    
+    fetchSymbol(symbol);
+    input.value = '';
+}
+
+// Sembol verilerini getir ve tabloya ekle
+function fetchSymbol(symbol, delay = 0) {
+    setTimeout(() => {
+        fetch(`/api/equity_info?symbol=${symbol}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    appendRow(res.data);
+                    // İlk eklenen sembol için grafiği göster
+                    if (!currentSymbol) {
+                        showChart(symbol);
+                    }
+                } else {
+                    alert(`${symbol} için veri alınamadı: ${res.error || 'Bilinmeyen hata'}`);
+                }
+            })
+            .catch(error => {
+                console.error(`${symbol} için veri alınamadı:`, error);
+                alert(`${symbol} için veri alınamadı. Lütfen tekrar deneyin.`);
+            });
+    }, delay);
+}
+
+// Tabloya yeni satır ekle
+function appendRow(item) {
+    const tbody = document.querySelector('#marketDataTable tbody');
+    // Mevcut mu kontrol et
+    for (const row of tbody.rows) {
+        if (row.cells[0].textContent === item.symbol) {
+            return; // Zaten ekli
+        }
+    }
+    
+    const row = tbody.insertRow();
+    const changePercentage = parseFloat(item.change_percentage);
+    const changeClass = changePercentage > 0 ? 'text-success' : 'text-danger';
+    
+    row.innerHTML = `
+        <td>${item.symbol}</td>
+        <td>${item.last_price}</td>
+        <td class="${changeClass}">${changePercentage}%</td>
+        <td>${item.high || '-'}</td>
+        <td>${item.low || '-'}</td>
+        <td>${item.volume || '-'}</td>
+        <td>
+            <button class="btn btn-sm btn-primary" onclick="showChart('${item.symbol}')">Grafik</button>
+            <button class="btn btn-sm btn-danger ms-1" onclick="removeRow(this)">Sil</button>
+        </td>
+    `;
+}
+
+// Satırı tablodan kaldır
+function removeRow(btn) {
+    btn.closest('tr').remove();
+}
+
+// Seçilen sembolün grafiğini göster
+function showChart(symbol) {
+    if (!symbol) return;
+    
+    currentSymbol = symbol;
+    document.getElementById('chartSymbolTitle').textContent = symbol;
+    
+    updateChart();
+}
+
+// Grafiği güncelle
+function updateChart() {
+    if (!currentSymbol) {
+        document.getElementById('chartContainer').innerHTML = '<div class="alert alert-info">Lütfen bir hisse seçin</div>';
+        return;
+    }
+    
+    const period = document.getElementById('periodSelect').value;
+    const interval = document.getElementById('intervalSelect').value;
+    
+    // Grafik yükleniyor göstergesi
+    document.getElementById('chartContainer').innerHTML = 
+        `<div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>`;
+
+    fetch(`/api/candle_data?symbol=${currentSymbol}&period=${period}&interval=${interval}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Plotly.newPlot('chartContainer', JSON.parse(data.chart));
+            } else {
+                document.getElementById('chartContainer').innerHTML = `
+                    <div class="alert alert-danger">
+                        Veri alınırken hata oluştu: ${data.error || 'Bilinmeyen hata'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('chartContainer').innerHTML = `
+                <div class="alert alert-danger">
+                    Bir hata oluştu: ${error}
+                </div>
+            `;
+        });
+}
 </script>
 
 <style>
-.stock-card {
-    transition: all 0.3s ease;
-    border: none;
-    border-left: 4px solid transparent;
-}
-
-.stock-card:hover {
-    border-left-color: #007bff;
+.table th, .table td {
+    vertical-align: middle;
 }
 
 .badge {

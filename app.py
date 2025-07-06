@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import json
 import time
 from collections import deque
+import yfinance as yf
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -264,64 +265,37 @@ def websocket_page():
 @app.route('/market_data')
 @login_required
 def market_data():
-    """Piyasa verileri sayfası – Algolab API'den /api/GetEquityInfo sonucunu çeker."""
-    username = session.get('username')
-    api_key = session.get('api_key')
-    token = session.get('token')
-    hash_value = session.get('hash')
-
-    api = AlgolabAPI(username=username, api_key=api_key)
-    api.token = token
-    api.hash = hash_value
-
-    # Algolab API'de /api/GetEquityInfo endpoint'i için 'symbol' parametresi zorunludur.
-    # Gösterilecek bazı yaygın BIST sembollerini sorguluyoruz.
-    default_symbols = ["GARAN", "AKBNK", "THYAO", "SISE", "BIMAS"]
-    symbols = []
-
-    for sym in default_symbols:
-        equity = api.GetEquityInfo(sym)
-        if equity is None:
-            print(f"GetEquityInfo failed for {sym}: {api.last_error}")
-            continue
-
-        # Dönen JSON alanları tutarsız olabildiği için olası varyasyonlar kontrol ediliyor
-        last_price = (equity.get('lst') or equity.get('LastPrice') or
-                      equity.get('Last') or equity.get('last_price'))
-        change_pct = (equity.get('ChangePercentage') or equity.get('changePercent') or
-                      equity.get('ChangePercent') or equity.get('PercentChange') or 0)
-        high = equity.get('high') or equity.get('High') or equity.get('max') or equity.get('Max')
-        low = equity.get('low') or equity.get('Low') or equity.get('min') or equity.get('Min')
-        volume = equity.get('volume') or equity.get('Volume') or equity.get('TradeQuantity')
-
-        try:
-            change_pct = float(change_pct)
-        except (TypeError, ValueError):
-            change_pct = 0.0
-
-        symbols.append({
-            "symbol": sym,
-            "last_price": last_price,
-            "change_percentage": change_pct,
-            "high": high,
-            "low": low,
-            "volume": volume,
-        })
-
-        # API dokümantasyonundaki 5 sn kuralını tamamen beklemek yerine kısa bir gecikme ekleniyor.
-        time.sleep(0.2)
-
-    if not symbols:
-        flash(f"Piyasa verileri alınamadı: {api.last_error}", "warning")
-
-    return render_template('market_data.html', symbols=symbols)
+    """Piyasa verileri sayfası artık analysis sayfasına yönlendiriyor"""
+    return redirect(url_for('analysis'))
 
 
 
 @app.route('/analysis')
 @login_required
 def analysis():
-    return render_template('analysis.html')
+    """Analiz ve piyasa verileri sayfası"""
+    # Günlük işlemleri al
+    api = AlgolabAPI(username=session.get('username'), api_key=session.get('api_key'))
+    api.token = session.get('token')
+    api.hash = session.get('hash')
+    
+    daily_transactions = []
+    tx_data = api.TodaysTransaction()
+    if tx_data:
+        for tx in tx_data:
+            # Sadece gerçekleşen işlemleri göster
+            if tx.get('equityStatusDescription', '').upper() == 'FILLED':
+                daily_transactions.append({
+                    'ticker': tx.get('ticker', '-'),
+                    'buysell': 'Alış' if tx.get('buysell', '').upper() == 'BUY' else 'Satış',
+                    'ordersize': tx.get('ordersize', '0'),
+                    'price': tx.get('price', '0'),
+                    'amount': float(tx.get('ordersize', '0')) * float(tx.get('price', '0')),
+                    'status': 'Gerçekleşti',
+                    'timetransaction': tx.get('timetransaction', '-')
+                })
+    
+    return render_template('analysis.html', daily_transactions=daily_transactions)
 
 @app.route('/backtest', defaults={'id': None})
 @app.route('/backtest/<int:id>')
@@ -465,6 +439,41 @@ def api_equity_info():
         "volume": data.get('Volume') or data.get('volume') or data.get('TradeQuantity')
     }
     return jsonify(success=True, data=result)
+
+@app.route('/api/yfinance')
+@login_required
+def api_yfinance():
+    """Yahoo Finance API'sinden sembol verisi çeker. BIST100 için ^XU100, döviz için USDTRY=X ve EURTRY=X sembolleri kullanılır."""
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return jsonify(success=False, error="symbol parametresi zorunlu"), 400
+        
+    try:
+        # Yahoo Finance'den veri çek
+        ticker = yf.Ticker(symbol)
+        data = ticker.history(period="1d")
+        
+        if data.empty:
+            return jsonify(success=False, error="Veri bulunamadı"), 200
+            
+        # Son satırı al
+        last_row = data.iloc[-1]
+        
+        # Değişim yüzdesini hesapla
+        change_percentage = ((last_row['Close'] - last_row['Open']) / last_row['Open']) * 100
+        
+        result = {
+            "symbol": symbol,
+            "last_price": round(float(last_row['Close']), 2),
+            "change_percentage": round(float(change_percentage), 2),
+            "high": round(float(last_row['High']), 2),
+            "low": round(float(last_row['Low']), 2),
+            "volume": int(last_row['Volume'])
+        }
+        
+        return jsonify(success=True, data=result)
+    except Exception as e:
+        return jsonify(success=False, error=str(e)), 200
 
 @app.route('/api/candle_data')
 @login_required
