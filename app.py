@@ -369,11 +369,17 @@ def tradingview_webhook():
     quantity = data.get('quantity')
     price = data.get('price')
 
+    # Gelen webhook verilerini detaylı logla
+    print(f"[DEBUG] TradingView Webhook Verisi: symbol={symbol}, side={side_raw}, type={order_type_raw}, quantity={quantity}, price={price}")
+
     if not symbol or not side_raw or not quantity:
         return jsonify(success=False, error='Eksik parametre'), 400
 
     side = 'Buy' if side_raw == 'BUY' else 'Sell'
     order_type = 'Market' if order_type_raw == 'MARKET' else 'Limit'
+    
+    # Emir tipi dönüşümünü logla
+    print(f"[DEBUG] Dönüştürülen emir tipi: {order_type_raw} -> {order_type}")
 
     order_status = 'waiting'
     order_id = None
@@ -381,6 +387,9 @@ def tradingview_webhook():
 
     try:
         if 'api_instance' in globals() and api_instance:
+            # API'ye gönderilecek parametreleri logla
+            print(f"[DEBUG] API'ye gönderilecek parametreler: symbol={symbol}, side={side}, quantity={quantity}, price={price}, order_type={order_type}")
+            
             res = api_instance.SendOrder(symbol, side, quantity, price, order_type)
             print(f"Webhook API yanıtı: {res}")
             
