@@ -114,7 +114,7 @@ https://your-app-url.com/webhook/tradingview
     "side": "BUY",  // veya "SELL"
     "type": "MARKET",  // veya "LIMIT"
     "price": "0",  // LIMIT emirleri için fiyat
-    "quantity": "0.1"  // Küçük lot değerleri kullanın (0.1, 0.2 vb.)
+    "quantity": "1"  // Lot miktarı 1 ve katları olmalıdır
 }
 ```
 
@@ -132,7 +132,7 @@ https://your-app-url.com/webhook/tradingview
     "symbol": "SASA",
     "side": "BUY",
     "type": "MARKET",
-    "quantity": "0.1"
+    "quantity": "1"
 }
 ```
 - Market emirlerinde `price` belirtmeyin
@@ -146,12 +146,12 @@ https://your-app-url.com/webhook/tradingview
     "side": "BUY",
     "type": "LIMIT",
     "price": "3.55",
-    "quantity": "0.1"
+    "quantity": "1"
 }
 ```
 - Limit emirlerde mutlaka `price` belirtin
 - Emir belirtilen fiyattan gerçekleşir
-- Küçük lot değerleri kullanın (0.1, 0.2 vb.) - böylece "OrderExceedsLimit" hatalarını önlersiniz
+- Lot miktarı 1 ve katları olmalıdır (1, 2, 3 vb.)
 
 ### Önemli Notlar
 
@@ -201,12 +201,12 @@ Webhook'u test etmek için cURL kullanabilirsiniz:
 # Market Emri Testi
 curl -X POST http://localhost:5001/webhook/tradingview \
   -H "Content-Type: application/json" \
-  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"MARKET","quantity":"0.1"}'
+  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"MARKET","quantity":"1"}'
 
 # Limit Emri Testi
 curl -X POST http://localhost:5001/webhook/tradingview \
   -H "Content-Type: application/json" \
-  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"LIMIT","price":"3.55","quantity":"0.1"}'
+  -d '{"passphrase":"your_webhook_secret","symbol":"SASA","side":"BUY","type":"LIMIT","price":"3.55","quantity":"1"}'
 ```
 
 ## Notlar

@@ -104,7 +104,7 @@
     "symbol": "ISCTR",
     "side": "BUY",      // BUY veya SELL
     "type": "MARKET",   // Piyasa emri
-    "quantity": "0.1"   // İşlem miktarı (küçük lotlar kullanın)
+    "quantity": "1"     // İşlem miktarı (1 ve katları olmalı)
 }</code></pre>
                                 </div>
                             </div>
@@ -118,14 +118,14 @@
     "side": "BUY",      // BUY veya SELL
     "type": "LIMIT",    // Limit emri
     "price": "14.00",   // Limit emirler için fiyat
-    "quantity": "0.1"   // İşlem miktarı (küçük lotlar kullanın)
+    "quantity": "1"     // İşlem miktarı (1 ve katları olmalı)
 }</code></pre>
                                 </div>
                             </div>
                             
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Bilgi:</strong> Webhook emirlerinin durumu "Emir İletildi" olarak görünür. Bu, emrin Algolab API'ye başarıyla iletildiğini gösterir, ancak işlemin gerçekleştiği anlamına gelmez. Gerçekleşen işlemleri Algolab hesabınızdan kontrol edebilirsiniz.
+                                <strong>Bilgi:</strong> Webhook emirlerinin durumu "Emir İletildi" olarak görünür. Bu, emrin Algolab API'ye başarıyla iletildiğini gösterir, ancak işlemin gerçekleştiği anlamına gelmez. Gerçekleşen işlemleri Algolab hesabınızdan kontrol edebilirsiniz. Önemli: Lot miktarı (quantity) mutlaka 1 ve katları olmalıdır.
                             </div>
                         </div>
                     </div>
